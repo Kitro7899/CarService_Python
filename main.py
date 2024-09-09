@@ -15,8 +15,8 @@ class MainApp:
         FROM orders
         JOIN employees ON employees.id = orders.employee_id
         JOIN cars ON cars.id = orders.car_id
-        WHERE orders.employee_id = %s;
-        """
+        WHERE employees.id = %s
+        """  # Добавляем фильтрацию по user_id
         connection = mysql.connector.connect(
             host='localhost',
             user='root',
@@ -24,7 +24,7 @@ class MainApp:
             database='carservice'
         )
         cursor = connection.cursor()
-        cursor.execute(query, (self.user_id,))
+        cursor.execute(query, (self.user_id,))  # Передаем user_id в запрос
         result = cursor.fetchall()
         connection.close()
         return result
