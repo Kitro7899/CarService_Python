@@ -21,7 +21,7 @@
 1. Убедитесь, что у вас установлен Python и MySQL.
 2. Клонируйте этот репозиторий:
    ```bash
-   git clone https://github.com/ваш_репозиторий.git
+   git clone https://github.com/Kitro7899/CarService_Python.git
 3. Установите зависимости:
    ```bash
     pip install mysql-connector-python
