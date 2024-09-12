@@ -68,7 +68,7 @@ class MainApp:
             if values:
                 # Обновляем лейблы с детальной информацией о машине
                 car_id_query = """
-                SELECT cars.id, cars.make, cars.model, cars.year, cars.engine_size, cars.color, cars.registration_number, cars.mileage, cars.transmission_type, cars.fuel_type, cars.num_doors, cars.num_seats, cars.has_air_conditioning, cars.has_navigation, cars.has_sunroof, cars.last_service_date, orders.dead_line
+                SELECT cars.id, cars.make, cars.model, cars.year, cars.engine_size, cars.color, cars.registration_number, cars.mileage, cars.transmission_type, cars.fuel_type, cars.num_doors, cars.num_seats, cars.has_air_conditioning, cars.has_navigation, cars.last_service_date, orders.dead_line, vin_number
                 FROM cars
                 JOIN orders ON cars.id = orders.car_id
                 WHERE orders.employee_id = %s AND cars.make = %s AND orders.task = %s;
@@ -98,9 +98,10 @@ class MainApp:
                     self.seats_label.config(text=f"Кол. мест: {car_details[11]}")
                     self.air_conditioning_label.config(text=f"Кондиционер: {car_details[12]}")
                     self.navigation_label.config(text=f"Навигация: {car_details[13]}")
-                    self.sunroof_label.config(text=f"Солнцезащитный козырек: {car_details[14]}")
-                    self.last_service_date_label.config(text=f"Дата послед. обсл.: {car_details[15]}")
-                    self.dead_line.config(text=f"Запланир.дата окончания ремонта: {car_details[16]}")
+
+                    self.last_service_date_label.config(text=f"Дата послед. обсл.: {car_details[14]}")
+                    self.dead_line.config(text=f"Запланир.дата окончания ремонта: {car_details[15]}")
+                    self.vin_number.config(text=f"Вин номер: {car_details[16]}")
 
     def update_status(self):
         selected_item = self.tree.selection()
@@ -140,13 +141,13 @@ class MainApp:
         window = tk.Tk()
         window.title("CarService")
         window.geometry('1400x650+300+150')
-        window['bg'] = "grey"
+        window['bg'] = "darkgray"
         window.resizable(False, False)
 
         # Фрейм для кнопок и полей фильтрации
         filter_btns = tk.Frame(window, bg="lightgrey")
         filter_btns.place(x=0, y=510, width=300, height=140)  # Adjust these values as per your layout needs
-        filter_btns['bg'] = "white"
+        filter_btns['bg'] = "lightgrey"
         # Поля и кнопки фильтрации
         self.car_make_entry = tk.Entry(filter_btns)
         self.car_make_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
@@ -164,6 +165,7 @@ class MainApp:
         # Создаем таблицу
         columns = ("#1", "#2", "#3", "#4")
         self.tree = ttk.Treeview(window, columns=columns, show="headings")
+        
         self.tree.place(x=300, y=0, width=800, height=500)  # Adjust these values as per your layout needs
 
         scrollbar_tree = ttk.Scrollbar(window, orient=tk.VERTICAL, command=self.tree.yview)
@@ -180,6 +182,7 @@ class MainApp:
 
         # Фрейм для лейблов
         details_frame = tk.Frame(window)
+        details_frame['bg']="lightgrey"
         details_frame.place(x=0, y=0, width=300, height=500)  # Adjust these values as per your layout needs
 
         # Лейблы для детальной информации
@@ -209,19 +212,20 @@ class MainApp:
         self.air_conditioning_label.pack(anchor="w")
         self.navigation_label = tk.Label(details_frame, text="Навигация: ")
         self.navigation_label.pack(anchor="w")
-        self.sunroof_label = tk.Label(details_frame, text="Солнцезащитный козырек: ")
-        self.sunroof_label.pack(anchor="w")
+
         self.last_service_date_label = tk.Label(details_frame, text="Дата послед. обслуживания: ")
         self.last_service_date_label.pack(anchor="w")
         self.dead_line = tk.Label(details_frame, text="Запланир.дата окончания ремонта: ")
         self.dead_line.pack(anchor="w")
+        self.vin_number = tk.Label(details_frame, text="Вин номер: ")
+        self.vin_number.pack(anchor="w")
 
         # Фрейм для изменения статуса
         status_frame = tk.Frame(window)
         status_frame.place(x=310, y=510, width=300, height=80)  # Adjust these values as per your layout needs
-        status_frame['bg'] = "white"
+        status_frame['bg'] = "lightgrey"
 
-        self.status_combobox = ttk.Combobox(status_frame, values=["не выполнен", "в процессе", "выполнен"])
+        self.status_combobox = ttk.Combobox(status_frame, values=["не выполнен", "в ремонте", "в процессе", "выполнен", "диагностика" ])
         self.status_combobox.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
 
         update_status_button = tk.Button(status_frame, text="Обновить статус", command=self.update_status)
