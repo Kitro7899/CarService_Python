@@ -68,7 +68,7 @@ class MainApp:
             if values:
                 # Обновляем лейблы с детальной информацией о машине
                 car_id_query = """
-                SELECT cars.id, cars.make, cars.model, cars.year, cars.engine_size, cars.color, cars.registration_number, cars.mileage, cars.transmission_type, cars.fuel_type, cars.num_doors, cars.num_seats, cars.has_air_conditioning, cars.has_navigation, cars.last_service_date, orders.dead_line, vin_number
+                SELECT cars.id, cars.make, cars.model, cars.year, cars.engine_size, cars.color, cars.registration_number, cars.mileage, cars.transmission_type, cars.fuel_type, cars.num_doors, cars.num_seats, cars.has_air_conditioning, cars.has_navigation, cars.last_service_date, orders.dead_line, vin_number, orders.comment
                 FROM cars
                 JOIN orders ON cars.id = orders.car_id
                 WHERE orders.employee_id = %s AND cars.make = %s AND orders.task = %s;
@@ -85,11 +85,15 @@ class MainApp:
                 connection.close()
 
                 if car_details:
+                    color = car_details[5]
+                    # Проверка на цвет фона и установка цвета текста
+                    text_color = "white" if color.lower() not in ["white", "silver"] else "black"
+
                     self.make_label.config(text=f"Марка: {car_details[1]}")
                     self.model_label.config(text=f"Модель: {car_details[2]}")
                     self.year_label.config(text=f"Год выпуска: {car_details[3]}")
                     self.engine_size_label.config(text=f"Объем двигателя: {car_details[4]}")
-                    self.color_label.config(text=f"Цвет: {car_details[5]}")
+                    self.color_label.config(text=f"Цвет: {car_details[5]}", bg=color, foreground=text_color)
                     self.vin_label.config(text=f"Рег. номер: {car_details[6]}")
                     self.mileage_label.config(text=f"Пробег: {car_details[7]}")
                     self.transmission_label.config(text=f"Коробка передач: {car_details[8]}")
@@ -102,6 +106,7 @@ class MainApp:
                     self.last_service_date_label.config(text=f"Дата послед. обсл.: {car_details[14]}")
                     self.dead_line.config(text=f"Запланир.дата окончания ремонта: {car_details[15]}")
                     self.vin_number.config(text=f"Вин номер: {car_details[16]}")
+                    self.comment_label.config(text=f"Комментарий: \n {car_details[17]}")
 
     def update_status(self):
         selected_item = self.tree.selection()
@@ -140,13 +145,13 @@ class MainApp:
     def create_window(self):
         window = tk.Tk()
         window.title("CarService")
-        window.geometry('1400x650+300+150')
+        window.geometry('1100x645+300+150')
         window['bg'] = "darkgray"
         window.resizable(False, False)
 
         # Фрейм для кнопок и полей фильтрации
         filter_btns = tk.Frame(window, bg="lightgrey")
-        filter_btns.place(x=0, y=510, width=300, height=140)  # Adjust these values as per your layout needs
+        filter_btns.place(x=400, y=505, width=300, height=140)  # Adjust these values as per your layout needs
         filter_btns['bg'] = "lightgrey"
         # Поля и кнопки фильтрации
         self.car_make_entry = tk.Entry(filter_btns)
@@ -166,7 +171,7 @@ class MainApp:
         columns = ("#1", "#2", "#3", "#4")
         self.tree = ttk.Treeview(window, columns=columns, show="headings")
         
-        self.tree.place(x=300, y=0, width=800, height=500)  # Adjust these values as per your layout needs
+        self.tree.place(x=300, y=0, width=800, height=500)
 
         scrollbar_tree = ttk.Scrollbar(window, orient=tk.VERTICAL, command=self.tree.yview)
         scrollbar_tree.place(x=1084, y=0, height=499)
@@ -183,46 +188,66 @@ class MainApp:
         # Фрейм для лейблов
         details_frame = tk.Frame(window)
         details_frame['bg']="lightgrey"
-        details_frame.place(x=0, y=0, width=300, height=500)  # Adjust these values as per your layout needs
+        details_frame.place(x=0, y=0, width=300, height=700)  # Adjust these values as per your layout needs
 
         # Лейблы для детальной информации
-        self.make_label = tk.Label(details_frame, text="Марка: ")
-        self.make_label.pack(anchor="w")
-        self.model_label = tk.Label(details_frame, text="Модель: ")
-        self.model_label.pack(anchor="w")
-        self.year_label = tk.Label(details_frame, text="Год выпуска: ")
-        self.year_label.pack(anchor="w")
-        self.engine_size_label = tk.Label(details_frame, text="Объем двигателя: ")
-        self.engine_size_label.pack(anchor="w")
+        self.make_label = tk.Label(details_frame, text="Марка: ", bg="#69f551")
+        self.make_label.pack(anchor="w", padx=5, pady=5,
+                                fill='x')
+        self.model_label = tk.Label(details_frame, text="Модель: ", bg="#d9f551")
+        self.model_label.pack(anchor="w", padx=5, pady=5,
+                                fill='x')
+        self.year_label = tk.Label(details_frame, text="Год выпуска: ", bg="#f59251")
+        self.year_label.pack(anchor="w", padx=5, pady=5,
+                                fill='x')
+        self.engine_size_label = tk.Label(details_frame, text="Объем двигателя: ", bg="#9c4902")
+        self.engine_size_label.pack(anchor="w", padx=5, pady=5,
+                                fill='x')
         self.color_label = tk.Label(details_frame, text="Цвет: ")
-        self.color_label.pack(anchor="w")
-        self.vin_label = tk.Label(details_frame, text="Рег. номер: ")
-        self.vin_label.pack(anchor="w")
+        self.color_label.pack(anchor="w", padx=5, pady=5,
+                                fill='x')
+        self.vin_label = tk.Label(details_frame, text="Рег. номер: ", bg="#b4cc72")
+        self.vin_label.pack(anchor="w", padx=5, pady=5,
+                                fill='x')
         self.mileage_label = tk.Label(details_frame, text="Пробег: ")
-        self.mileage_label.pack(anchor="w")
+        self.mileage_label.pack(anchor="w", padx=5, pady=5,
+                                fill='x')
         self.transmission_label = tk.Label(details_frame, text="Коробка передач: ")
-        self.transmission_label.pack(anchor="w")
+        self.transmission_label.pack(anchor="w", padx=5, pady=5,
+                                fill='x')
         self.fuel_type_label = tk.Label(details_frame, text="Тип топлива: ")
-        self.fuel_type_label.pack(anchor="w")
+        self.fuel_type_label.pack(anchor="w", padx=5, pady=5,
+                                fill='x')
         self.doors_label = tk.Label(details_frame, text="Кол. дверей: ")
-        self.doors_label.pack(anchor="w")
+        self.doors_label.pack(anchor="w", padx=5, pady=5,
+                                fill='x')
         self.seats_label = tk.Label(details_frame, text="Кол. мест: ")
-        self.seats_label.pack(anchor="w")
+        self.seats_label.pack(anchor="w", padx=5, pady=5,
+                                fill='x')
         self.air_conditioning_label = tk.Label(details_frame, text="Кондиционер: ")
-        self.air_conditioning_label.pack(anchor="w")
+        self.air_conditioning_label.pack(anchor="w", padx=5, pady=5,
+                                fill='x')
         self.navigation_label = tk.Label(details_frame, text="Навигация: ")
-        self.navigation_label.pack(anchor="w")
+        self.navigation_label.pack(anchor="w", padx=5, pady=5,
+                                fill='x')
 
-        self.last_service_date_label = tk.Label(details_frame, text="Дата послед. обслуживания: ")
-        self.last_service_date_label.pack(anchor="w")
-        self.dead_line = tk.Label(details_frame, text="Запланир.дата окончания ремонта: ")
-        self.dead_line.pack(anchor="w")
-        self.vin_number = tk.Label(details_frame, text="Вин номер: ")
-        self.vin_number.pack(anchor="w")
+        self.last_service_date_label = tk.Label(details_frame, text="Дата послед. обслуживания: ", bg="#a5e342")
+        self.last_service_date_label.pack(anchor="w", padx=5, pady=5,
+                                fill='x')
+        self.dead_line = tk.Label(details_frame, text="Запланир.дата окончания ремонта: ", bg="#ed4e40")
+        self.dead_line.pack(anchor="w", padx=5, pady=5,
+                                fill='x')
+        self.vin_number = tk.Label(details_frame, text="Вин номер: ", bg="#eddb11")
+        self.vin_number.pack(anchor="w", padx=5, pady=5,
+                                fill='x')
+        self.comment_label = tk.Label(details_frame, text="Комментарий: ", bg="#003366", fg="white",
+                                      wraplength=250)  # Установите нужную ширину в пикселях
+        self.comment_label.pack(anchor="w", padx=5, pady=5,
+                                fill='x')  # Используем fill='x' чтобы лейбл растягивался по горизонтали
 
         # Фрейм для изменения статуса
         status_frame = tk.Frame(window)
-        status_frame.place(x=310, y=510, width=300, height=80)  # Adjust these values as per your layout needs
+        status_frame.place(x=705, y=505, width=300, height=80)  # Adjust these values as per your layout needs
         status_frame['bg'] = "lightgrey"
 
         self.status_combobox = ttk.Combobox(status_frame, values=["не выполнен", "в ремонте", "в процессе", "выполнен", "диагностика" ])

@@ -51,6 +51,8 @@ def open_admin_window():
 window = tk.Tk()
 window.title("Авторизация")
 window.geometry("300x300+800+300")
+window['bg']="#757d80"
+window.resizable(False, False)
 
 # Поле для ввода логина
 tk.Label(window, text="Логин").pack(pady=5)
@@ -67,7 +69,7 @@ login_button = tk.Button(window, text="Войти", command=login)
 login_button.pack(pady=20)
 
 # Кнопка для входа как администратор
-admin_button = tk.Button(window, text="Войти как администратор", command=open_admin_window)
+admin_button = tk.Button(window, text="Войти как администратор", bg="#e8d935", activebackground="#eddb11", command=open_admin_window)
 admin_button.pack(pady=20)
 
 window.mainloop()
