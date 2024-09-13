@@ -202,7 +202,7 @@ class AdminApp:
         self.add_ord['bg'] = '#485154'
 
         filter_addForm = tk.Frame(self.add_ord)
-        filter_addForm.place(x=0, y=300, width=400, height=100)
+        filter_addForm.place(x=0, y=400, width=400, height=100)
         filter_addForm['bg'] = "#757d80"
 
         f_button = tk.Button(filter_addForm, text="Фильтровать", command=self.refresh_cars_table)
@@ -220,7 +220,7 @@ class AdminApp:
 
 
         add_form = tk.Frame(self.add_ord, bg="lightgray")
-        add_form.place(x=0, y=0, width=400, height=200)
+        add_form.place(x=0, y=0, width=400, height=300)
         add_form['bg'] = "#757d80"
         tk.Label(add_form, text="Добавить новый заказ", font=('Arial', 18)).grid(row=0, column=0, columnspan=2, pady=20)
 
